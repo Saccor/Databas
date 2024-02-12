@@ -62,7 +62,7 @@ async function selectMovie() {
           break;
         case 2:
           await deleteMovie(selectedMovie);
-          return;  // Detta avslutar do-while-loopen och går tillbaka till huvudmenyn
+          return; 
         case 3:
           console.log('Återgår till huvudmenyn.');
           break;
@@ -106,15 +106,15 @@ async function updateMovie(selectedMovie) {
         selectedMovie.releaseYear = (await getUserInput(['releaseYear'])).releaseYear;
         break;
       case 4:
-        // Uppdatera genrer (lägg till eller ta bort)
+      
         await updateArrayField(selectedMovie.genres, 'genres');
         break;
       case 5:
-        // Uppdatera betyg (lägg till eller ta bort)
+
         await updateArrayField(selectedMovie.ratings, 'ratings');
         break;
       case 6:
-        // Uppdatera skådespelare (lägg till eller ta bort)
+
         await updateArrayField(selectedMovie.cast, 'cast');
         break;
       case 7:
@@ -174,7 +174,7 @@ function getUserInput(fields) {
             inputObject[fields[index]] = choice;
           } else {
             console.log('Ogiltigt val. Ange ett nummer mellan 1 och 7.');
-            handleInput(index);  // Fråga om input igen
+            handleInput(index);
             return;
           }
         } else {
@@ -193,7 +193,7 @@ function getUserInput(fields) {
   });
 }
 
-// Huvudapplikationsloopen
+// Huvudapp-loopen
 let userChoice;
 do {
   displayMenu();
