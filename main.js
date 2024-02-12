@@ -2,7 +2,7 @@
 
 import mongoose from 'mongoose';
 
-// Connect to MongoDB
+// Anslut till MongoDB
 await mongoose.connect('mongodb://localhost:27017/saccosdata');
 const movies = mongoose.model('Movies', {
   title: String,
@@ -13,45 +13,45 @@ const movies = mongoose.model('Movies', {
   cast: [String]
 });
 
-// Function to display the menu
+// Funktion för att visa menyn
 function displayMenu() {
-  console.log('\nMenu:');
-  console.log('1. View all movies');
-  console.log('2. Select a movie');
-  console.log('3. Add a new movie');
-  console.log('4. Update a movie (Update title, director, release date, genres, ratings, cast)');
-  console.log('5. Delete a movie');
-  console.log('6. Exit');
+  console.log('\nMeny:');
+  console.log('1. Visa alla filmer');
+  console.log('2. Välj en film');
+  console.log('3. Lägg till en ny film');
+  console.log('4. Uppdatera en film (Uppdatera titel, regissör, släppår, genrer, betyg, skådespelare)');
+  console.log('5. Ta bort en film');
+  console.log('6. Avsluta');
 }
 
-// Function to view all movies
+// Funktion för att visa alla filmer
 async function viewAllMovies() {
   const allMovies = await movies.find({});
 
   if (allMovies.length > 0) {
-    console.log('\nAll Movies:');
+    console.log('\nAlla filmer:');
     allMovies.forEach(movie => console.log(movie));
   } else {
-    console.log('No movies found.');
+    console.log('Inga filmer hittades.');
   }
 }
 
-// Function to select a movie
+// Funktion för att välja en film
 async function selectMovie() {
   const titleToSelect = await getUserInput(['title']);
   const selectedMovie = await movies.findOne({ title: titleToSelect.title });
 
   if (selectedMovie) {
-    console.log('\nSelected Movie:');
+    console.log('\nVald film:');
     console.log(selectedMovie);
 
-    // Display sub-menu options for the selected movie
+    // Visa undermenyalternativ för den valda filmen
     let subMenuChoice;
     do {
-      console.log('\nMovie Options:');
-      console.log('1. Update movie details');
-      console.log('2. Delete this movie');
-      console.log('3. Back to the main menu');
+      console.log('\nFilmalternativ:');
+      console.log('1. Uppdatera filminformation');
+      console.log('2. Ta bort denna film');
+      console.log('3. Tillbaka till huvudmenyn');
 
       const subMenuInput = await getUserInput(['choice']);
       subMenuChoice = parseInt(subMenuInput.choice, 10);
@@ -62,35 +62,35 @@ async function selectMovie() {
           break;
         case 2:
           await deleteMovie(selectedMovie);
-          return;  // This will exit the do-while loop and go back to the main menu
+          return;  // Detta avslutar do-while-loopen och går tillbaka till huvudmenyn
         case 3:
-          console.log('Returning to the main menu.');
+          console.log('Återgår till huvudmenyn.');
           break;
         default:
-          console.log('Invalid choice. Please enter a number between 1 and 3.');
+          console.log('Ogiltigt val. Ange ett nummer mellan 1 och 3.');
       }
     } while (subMenuChoice !== 3);
   } else {
-    console.log('Movie not found.');
+    console.log('Film ej hittad.');
   }
 }
 
-// Function to update a movie
+// Funktion för att uppdatera en film
 async function updateMovie(selectedMovie) {
-  console.log('Updating Movie:');
+  console.log('Uppdaterar film:');
   console.log(selectedMovie);
 
   let isValidChoice = false;
 
   do {
-    console.log('\nUpdate Options:');
-    console.log('1. Update title');
-    console.log('2. Update director');
-    console.log('3. Update release year');
-    console.log('4. Update genres');
-    console.log('5. Update ratings');
-    console.log('6. Update cast');
-    console.log('7. Back to movie options');
+    console.log('\nUppdateringsalternativ:');
+    console.log('1. Uppdatera titel');
+    console.log('2. Uppdatera regissör');
+    console.log('3. Uppdatera släppår');
+    console.log('4. Uppdatera genrer');
+    console.log('5. Uppdatera betyg');
+    console.log('6. Uppdatera skådespelare');
+    console.log('7. Tillbaka till filmalternativ');
 
     const updateChoiceInput = await getUserInput(['choice']);
     const updateChoice = parseInt(updateChoiceInput.choice, 10);
@@ -106,41 +106,39 @@ async function updateMovie(selectedMovie) {
         selectedMovie.releaseYear = (await getUserInput(['releaseYear'])).releaseYear;
         break;
       case 4:
-        // Update genres (add or remove)
+        // Uppdatera genrer (lägg till eller ta bort)
         await updateArrayField(selectedMovie.genres, 'genres');
         break;
       case 5:
-        // Update ratings (add or remove)
+        // Uppdatera betyg (lägg till eller ta bort)
         await updateArrayField(selectedMovie.ratings, 'ratings');
         break;
       case 6:
-        // Update cast (add or remove)
+        // Uppdatera skådespelare (lägg till eller ta bort)
         await updateArrayField(selectedMovie.cast, 'cast');
         break;
       case 7:
-        console.log('Returning to movie options.');
+        console.log('Återgår till filmalternativ.');
         isValidChoice = true;
         break;
       default:
-        console.log('Invalid choice. Please enter a number between 1 and 7.');
+        console.log('Ogiltigt val. Ange ett nummer mellan 1 och 7.');
     }
   } while (!isValidChoice);
 
   await selectedMovie.save();
-  console.log('Movie updated successfully!');
+  console.log('Film uppdaterad framgångsrikt!');
 }
 
-
-
-// Function to delete a movie
+// Funktion för att ta bort en film
 async function deleteMovie(selectedMovie) {
   await movies.findOneAndDelete({ _id: selectedMovie._id });
-  console.log('Movie deleted successfully!');
+  console.log('Film borttagen framgångsrikt!');
 }
 
-// Function to update an array field
+// Funktion för att uppdatera en arrayfält
 async function updateArrayField(array, fieldName) {
-  console.log(`Update ${fieldName}:`);
+  console.log(`Uppdatera ${fieldName}:`);
   console.log(array);
 
   const action = await getUserInput(['addOrRemove']);
@@ -153,20 +151,20 @@ async function updateArrayField(array, fieldName) {
     if (indexToRemove.indexToRemove >= 0 && indexToRemove.indexToRemove < array.length) {
       array.splice(indexToRemove.indexToRemove, 1);
     } else {
-      console.log('Invalid index. Please enter a valid index to remove.');
+      console.log('Ogiltig index. Ange ett giltigt index att ta bort.');
     }
   } else {
-    console.log('Invalid action. Please enter "add" or "remove".');
+    console.log('Ogiltig åtgärd. Ange "add" eller "remove".');
   }
 }
 
-// Function to get user input for specified fields
+// Funktion för att få användarinput för angivna fält
 function getUserInput(fields) {
   return new Promise(resolve => {
     const inputObject = {};
 
     const handleInput = (index = 0) => {
-      process.stdout.write(`Enter ${fields[index]}: `);
+      process.stdout.write(`Ange ${fields[index]}: `);
       process.stdin.once('data', data => {
         const value = data.toString().trim();
 
@@ -175,8 +173,8 @@ function getUserInput(fields) {
           if (!isNaN(choice) && choice >= 1 && choice <= 7) {
             inputObject[fields[index]] = choice;
           } else {
-            console.log('Invalid choice. Please enter a number between 1 and 7.');
-            handleInput(index);  // Re-prompt for input
+            console.log('Ogiltigt val. Ange ett nummer mellan 1 och 7.');
+            handleInput(index);  // Fråga om input igen
             return;
           }
         } else {
@@ -195,11 +193,11 @@ function getUserInput(fields) {
   });
 }
 
-// Main application loop
+// Huvudapplikationsloopen
 let userChoice;
 do {
   displayMenu();
-  process.stdout.write('Enter your choice (1-6): ');
+  process.stdout.write('Ange ditt val (1-6): ');
 
   const userInput = await getUserInput(['choice']);
   userChoice = parseInt(userInput.choice, 10);
@@ -215,18 +213,18 @@ do {
       await addNewMovie();
       break;
     case 4:
-      console.log('Select a movie before updating.');
+      console.log('Välj en film innan du uppdaterar.');
       break;
     case 5:
-      console.log('Select a movie before deleting.');
+      console.log('Välj en film innan du tar bort.');
       break;
     case 6:
-      console.log('Exiting application. Goodbye!');
+      console.log('Avslutar applikationen. Hejdå!');
       break;
     default:
-      console.log('Invalid choice. Please enter a number between 1 and 6.');
+      console.log('Ogiltigt val. Ange ett nummer mellan 1 och 6.');
   }
 } while (userChoice !== 6);
 
-// Close MongoDB connection
+// Stäng MongoDB-anslutningen
 mongoose.connection.close();
